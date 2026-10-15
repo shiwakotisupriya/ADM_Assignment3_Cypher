@@ -30,3 +30,54 @@ RETURN
     r.routeName AS routeName,
     a.completedDateTime AS completedDateTime
 ORDER BY a.assignmentID;
+
+// USECASE 3
+
+[MATCH (d:Driver)-[r]->(a:DeliveryAssignment)
+RETURN type(r) AS relationshipType, count(*) AS total
+ORDER BY total DESC;]
+
+
+MATCH (d:Driver)-[:HAS_ASSIGNMENT]->(a:DeliveryAssignment)
+WITH d, count(DISTINCT a) AS assignmentCount
+RETURN
+    d.driverID AS driverID,
+    assignmentCount
+ORDER BY assignmentCount DESC, driverID ASC
+LIMIT 10;
+
+
+
+
+//USECASE 4
+
+MATCH (c:Customer)-[:PLACES]->(:DeliveryOrder)
+      -[:GENERATES]->(s:Shipment)
+WHERE NOT EXISTS {
+    MATCH (s)-[delivered:STATUS_AT]->(:Location)
+    WHERE delivered.status = 'Delivered'
+}
+MATCH (s)-[h:STATUS_AT]->(l:Location)
+WITH c, s, h, l
+ORDER BY h.statusDateTime DESC, h.statusHistoryID DESC
+WITH c, s,
+     head(collect({
+         status: h.status,
+         recordedAt: h.statusDateTime,
+         suburb: l.suburb
+     })) AS latest
+OPTIONAL MATCH (s)-[:HAS_ASSIGNMENT]->(a:DeliveryAssignment)
+OPTIONAL MATCH (d:Driver)-[:PERFORMS]->(a)
+OPTIONAL MATCH (a)-[:USES]->(v:Vehicle)
+RETURN
+    s.shipmentID AS shipmentID,
+    coalesce(
+        c.businessName,
+        c.firstName + ' ' + c.lastName
+    ) AS customerName,
+    latest.status AS latestStatus,
+    latest.recordedAt AS lastRecordedAt,
+    latest.suburb AS lastRecordedSuburb,
+    d.firstName + ' ' + d.lastName AS driverName,
+    v.registrationNumber AS vehicleRegistration
+ORDER BY shipmentID, a.assignmentID;
