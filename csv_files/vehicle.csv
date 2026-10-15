@@ -1,0 +1,6 @@
+vehicleID,registrationNumber,make,model,capacityKg,vehicleType,vehicleStatus
+1,FDV101,Toyota,HiAce,1200,Van,Available
+2,FDV102,Isuzu,NPR,4500,Truck,Assigned
+3,FDV103,Ford,Transit,1500,Van,Available
+4,FDV104,Hino,300,5000,Truck,Maintenance
+5,FDV105,Mercedes-Benz,Sprinter,2000,Van,Available

@@ -1,0 +1,13 @@
+statusHistoryID,shipmentID,locationID,status,statusDateTime,notes
+601,201,1,Dispatched,"2026-08-21 08:30:00","Shipment departed"
+602,201,7,Delivered,"2026-08-21 13:10:00","Delivered successfully"
+603,202,1,Dispatched,"2026-08-22 08:00:00","Shipment departed"
+604,202,2,Delivered,"2026-08-22 12:20:00","Received by customer"
+605,203,1,Dispatched,"2026-08-23 08:30:00","Shipment departed"
+606,203,3,"In Transit","2026-08-23 10:15:00","Arrived at route stop"
+607,203,5,Delivered,"2026-08-23 14:15:00","Delivery completed"
+608,204,1,Dispatched,"2026-08-24 08:30:00","Shipment departed"
+609,204,6,Delivered,"2026-08-24 13:30:00","Delivery completed"
+610,205,1,Dispatched,"2026-08-25 08:00:00","Shipment departed"
+611,205,4,"In Transit","2026-08-25 10:10:00","Currently in transit"
+612,206,1,Dispatched,"2026-08-26 08:00:00","Shipment departed"

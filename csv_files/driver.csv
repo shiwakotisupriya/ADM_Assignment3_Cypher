@@ -1,0 +1,6 @@
+driverID,firstName,lastName,licenceNumber,licenceExpiry,phone,employmentStatus
+1,Daniel,Smith,NSW-D1001,2028-03-15,0411000001,Active
+2,Mia,Johnson,NSW-D1002,2027-11-20,0411000002,Active
+3,Ethan,Lee,NSW-D1003,2029-01-10,0411000003,Active
+4,Ava,Clark,NSW-D1004,2027-08-05,0411000004,Active
+5,Lucas,White,NSW-D1005,2028-06-30,0411000005,Inactive

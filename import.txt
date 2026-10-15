@@ -1,0 +1,371 @@
+CREATE CONSTRAINT customer_id_unique IF NOT EXISTS
+FOR (c:Customer)
+REQUIRE c.customerID IS UNIQUE;
+
+LOAD CSV WITH HEADERS FROM 'file:///customer.csv' AS row
+MERGE (c:Customer {customerID: toInteger(row.customerID)})
+SET c.email = row.email,
+    c.phone = row.phone,
+    c.customerType = row.customerType;
+
+
+MATCH (c:Customer)
+RETURN c.customerID AS customerID,
+       c.email AS email,
+       c.phone AS phone,
+       c.customerType AS customerType
+ORDER BY customerID;
+
+
+
+MATCH (c:Customer)
+RETURN count(c) AS totalCustomers;
+
+CREATE CONSTRAINT customer_id_unique IF NOT EXISTS
+FOR (n:Customer) REQUIRE n.customerID IS UNIQUE;
+
+CREATE CONSTRAINT order_id_unique IF NOT EXISTS
+FOR (n:DeliveryOrder) REQUIRE n.orderID IS UNIQUE;
+
+CREATE CONSTRAINT shipment_id_unique IF NOT EXISTS
+FOR (n:Shipment) REQUIRE n.shipmentID IS UNIQUE;
+
+CREATE CONSTRAINT package_id_unique IF NOT EXISTS
+FOR (n:Package) REQUIRE n.packageID IS UNIQUE;
+
+CREATE CONSTRAINT route_id_unique IF NOT EXISTS
+FOR (n:Route) REQUIRE n.routeID IS UNIQUE;
+
+CREATE CONSTRAINT location_id_unique IF NOT EXISTS
+FOR (n:Location) REQUIRE n.locationID IS UNIQUE;
+
+CREATE CONSTRAINT driver_id_unique IF NOT EXISTS
+FOR (n:Driver) REQUIRE n.driverID IS UNIQUE;
+
+CREATE CONSTRAINT vehicle_id_unique IF NOT EXISTS
+FOR (n:Vehicle) REQUIRE n.vehicleID IS UNIQUE;
+
+CREATE CONSTRAINT assignment_id_unique IF NOT EXISTS
+FOR (n:DeliveryAssignment) REQUIRE n.assignmentID IS UNIQUE;
+
+CREATE CONSTRAINT maintenance_id_unique IF NOT EXISTS
+FOR (n:VehicleMaintenance) REQUIRE n.maintenanceID IS UNIQUE;
+
+CREATE INDEX driver_status_index IF NOT EXISTS
+FOR (n:Driver) ON (n.employmentStatus);
+
+CREATE INDEX order_date_index IF NOT EXISTS
+FOR (n:DeliveryOrder) ON (n.orderDate);
+
+
+
+
+// Customers
+LOAD CSV WITH HEADERS FROM 'file:///customer.csv' AS row
+MERGE (n:Customer {customerID: toInteger(row.customerID)})
+SET n.email = row.email,
+    n.phone = row.phone,
+    n.customerType = row.customerType;
+
+
+
+
+
+// Individual customer labels and properties
+LOAD CSV WITH HEADERS FROM 'file:///individual_customer.csv' AS row
+MATCH (n:Customer {customerID: toInteger(row.customerID)})
+SET n:IndividualCustomer,
+    n.firstName = row.firstName,
+    n.lastName = row.lastName;
+
+
+// Business customer labels and properties
+LOAD CSV WITH HEADERS FROM 'file:///business_customer.csv' AS row
+MATCH (n:Customer {customerID: toInteger(row.customerID)})
+SET n:BusinessCustomer,
+    n.businessName = row.businessName,
+    n.ABN = row.ABN,
+    n.contactPerson = row.contactPerson;
+
+
+
+// Delivery orders
+LOAD CSV WITH HEADERS FROM 'file:///delivery_order.csv' AS row
+MERGE (n:DeliveryOrder {orderID: toInteger(row.orderID)})
+SET n.orderDate = date(row.orderDate),
+    n.priority = row.priority,
+    n.requestedPickupDate = date(row.requestedPickupDate),
+    n.requiredDeliveryDate = date(row.requiredDeliveryDate);
+
+
+
+
+// Shipments
+LOAD CSV WITH HEADERS FROM 'file:///shipment.csv' AS row
+MERGE (n:Shipment {shipmentID: toInteger(row.shipmentID)})
+SET n.shipmentDate = date(row.shipmentDate),
+    n.expectedDeliveryDate = date(row.expectedDeliveryDate);
+
+
+
+
+// Packages
+LOAD CSV WITH HEADERS FROM 'file:///package.csv' AS row
+MERGE (n:Package {packageID: toInteger(row.packageID)})
+SET n.description = row.description,
+    n.weightKg = toFloat(row.weightKg),
+    n.lengthCm = toFloat(row.lengthCm),
+    n.widthCm = toFloat(row.widthCm),
+    n.heightCm = toFloat(row.heightCm),
+    n.fragile = (row.fragile = '1');
+
+
+
+// Routes
+LOAD CSV WITH HEADERS FROM 'file:///route.csv' AS row
+MERGE (n:Route {routeID: toInteger(row.routeID)})
+SET n.routeName = row.routeName,
+    n.distanceKm = toFloat(row.distanceKm);
+
+
+
+
+
+// Locations
+LOAD CSV WITH HEADERS FROM 'file:///location.csv' AS row
+MERGE (n:Location {locationID: toInteger(row.locationID)})
+SET n.street = row.street,
+    n.suburb = row.suburb,
+    n.state = row.state,
+    n.postcode = row.postcode;
+
+
+
+
+
+
+// Drivers
+LOAD CSV WITH HEADERS FROM 'file:///driver.csv' AS row
+MERGE (n:Driver {driverID: toInteger(row.driverID)})
+SET n.firstName = row.firstName,
+    n.lastName = row.lastName,
+    n.licenceNumber = row.licenceNumber,
+    n.licenceExpiry = date(row.licenceExpiry),
+    n.phone = row.phone,
+    n.employmentStatus = row.employmentStatus;
+
+
+
+
+
+
+
+// Vehicles
+LOAD CSV WITH HEADERS FROM 'file:///vehicle.csv' AS row
+MERGE (n:Vehicle {vehicleID: toInteger(row.vehicleID)})
+SET n.registrationNumber = row.registrationNumber,
+    n.make = row.make,
+    n.model = row.model,
+    n.capacityKg = toFloat(row.capacityKg),
+    n.vehicleType = row.vehicleType,
+    n.vehicleStatus = row.vehicleStatus;
+
+
+
+
+
+// Delivery assignments
+LOAD CSV WITH HEADERS FROM 'file:///delivery_assignment.csv' AS row
+MERGE (n:DeliveryAssignment {assignmentID: toInteger(row.assignmentID)})
+SET n.assignedDateTime =
+      localdatetime(replace(row.assignedDateTime, ' ', 'T')),
+    n.completedDateTime =
+      CASE
+        WHEN trim(coalesce(row.completedDateTime, '')) = '' THEN null
+        ELSE localdatetime(replace(row.completedDateTime, ' ', 'T'))
+      END;
+
+
+
+
+
+// Vehicle maintenance
+LOAD CSV WITH HEADERS FROM 'file:///vehicle_maintenance.csv' AS row
+MERGE (n:VehicleMaintenance {maintenanceID: toInteger(row.maintenanceID)})
+SET n.maintenanceDate = date(row.maintenanceDate),
+    n.maintenanceType = row.maintenanceType,
+    n.cost = toFloat(row.cost),
+    n.nextDueDate = date(row.nextDueDate);
+
+
+
+
+
+
+//RELATIONSHIPS
+
+
+
+// Customer places delivery order
+LOAD CSV WITH HEADERS FROM 'file:///delivery_order.csv' AS row
+MATCH (c:Customer {customerID: toInteger(row.customerID)})
+MATCH (o:DeliveryOrder {orderID: toInteger(row.orderID)})
+MERGE (c)-[:PLACES]->(o);
+
+
+
+
+
+// Delivery order generates shipment; shipment follows route
+LOAD CSV WITH HEADERS FROM 'file:///shipment.csv' AS row
+MATCH (o:DeliveryOrder {orderID: toInteger(row.orderID)})
+MATCH (s:Shipment {shipmentID: toInteger(row.shipmentID)})
+MATCH (r:Route {routeID: toInteger(row.routeID)})
+MERGE (o)-[:GENERATES]->(s)
+MERGE (s)-[:FOLLOWS]->(r);
+
+
+
+
+
+
+
+// Shipment contains package
+LOAD CSV WITH HEADERS FROM 'file:///package.csv' AS row
+MATCH (s:Shipment {shipmentID: toInteger(row.shipmentID)})
+MATCH (p:Package {packageID: toInteger(row.packageID)})
+MERGE (s)-[:CONTAINS]->(p);
+
+
+
+
+
+
+
+
+// Assignment connects shipment, driver, and vehicle
+LOAD CSV WITH HEADERS FROM 'file:///delivery_assignment.csv' AS row
+MATCH (s:Shipment {shipmentID: toInteger(row.shipmentID)})
+MATCH (a:DeliveryAssignment {assignmentID: toInteger(row.assignmentID)})
+MATCH (d:Driver {driverID: toInteger(row.driverID)})
+MATCH (v:Vehicle {vehicleID: toInteger(row.vehicleID)})
+MERGE (s)-[:HAS_ASSIGNMENT]->(a)
+MERGE (d)-[:PERFORMS]->(a)
+MERGE (a)-[:USES]->(v);
+
+
+
+
+
+
+// Route stops become relationships with properties
+LOAD CSV WITH HEADERS FROM 'file:///route_stop.csv' AS row
+MATCH (r:Route {routeID: toInteger(row.routeID)})
+MATCH (l:Location {locationID: toInteger(row.locationID)})
+MERGE (r)-[stop:HAS_STOP {
+    stopSequence: toInteger(row.stopSequence)
+}]->(l)
+SET stop.plannedArrival =
+    localdatetime(replace(row.plannedArrival, ' ', 'T'));
+
+
+
+
+
+
+
+// Each status-history record becomes a separate relationship
+LOAD CSV WITH HEADERS FROM 'file:///delivery_status_history.csv' AS row
+MATCH (s:Shipment {shipmentID: toInteger(row.shipmentID)})
+MATCH (l:Location {locationID: toInteger(row.locationID)})
+MERGE (s)-[history:STATUS_AT {
+    statusHistoryID: toInteger(row.statusHistoryID)
+}]->(l)
+SET history.status = row.status,
+    history.statusDateTime =
+      localdatetime(replace(row.statusDateTime, ' ', 'T')),
+    history.notes = row.notes;
+
+
+
+
+
+
+
+
+
+// Vehicle undergoes maintenance
+LOAD CSV WITH HEADERS FROM 'file:///vehicle_maintenance.csv' AS row
+MATCH (v:Vehicle {vehicleID: toInteger(row.vehicleID)})
+MATCH (m:VehicleMaintenance {maintenanceID: toInteger(row.maintenanceID)})
+MERGE (v)-[:UNDERGOES]->(m);
+
+
+
+
+
+
+
+
+
+//MIGRATION VERIFICATION
+
+
+
+MATCH (n)
+UNWIND labels(n) AS label
+RETURN label, count(*) AS total
+ORDER BY label;
+
+
+
+//TotalNodes
+
+MATCH (n)
+RETURN count(n) AS totalNodes;
+
+
+
+
+//Total Relationship
+
+MATCH ()-[r]->()
+RETURN type(r) AS relationship, count(*) AS total
+ORDER BY relationship;
+
+
+
+
+SHOW INDEXES;
+
+
+
+
+
+
+
+MATCH (a)-[r]->(b)
+RETURN a, r, b
+LIMIT 100;
+
+
+
+
+
+
+
+//GRAPH VIEW
+
+
+
+
+MATCH path = (c:Customer)-[:PLACES]->(o:DeliveryOrder)
+             -[:GENERATES]->(s:Shipment)
+             -[:HAS_ASSIGNMENT]->(a:DeliveryAssignment)
+             -[:USES]->(v:Vehicle)
+RETURN path;
+
+
+
+
+

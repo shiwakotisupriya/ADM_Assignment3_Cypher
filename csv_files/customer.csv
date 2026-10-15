@@ -1,0 +1,7 @@
+customerID,email,phone,customerType
+1,liam.wilson@example.com,0400000001,Individual
+2,emma.brown@example.com,0400000002,Individual
+3,contact@harbourretail.example,0400000003,Business
+4,office@metrofoods.example,0400000004,Business
+5,noah.taylor@example.com,0400000005,Individual
+6,admin@citysupplies.example,0400000006,Business

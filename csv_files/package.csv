@@ -1,0 +1,11 @@
+packageID,shipmentID,description,weightKg,lengthCm,widthCm,heightCm,fragile
+301,201,"Personal Goods",15.5,50,40,30,0
+302,201,Electronics,8.2,35,25,20,1
+303,202,"Retail Stock",450,120,100,90,0
+304,202,"Display Equipment",85,100,70,60,1
+305,203,"Food Supplies",600,140,110,100,0
+306,204,"Home Items",45,70,50,45,1
+307,205,"Personal Parcel",12,40,30,25,0
+308,206,"Office Supplies",300,100,80,70,0
+309,203,"Refrigerated Goods",250,90,70,60,1
+310,206,"Printer Equipment",75,75,60,50,1

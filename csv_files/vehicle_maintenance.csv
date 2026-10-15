@@ -1,0 +1,6 @@
+maintenanceID,vehicleID,maintenanceDate,maintenanceType,cost,nextDueDate
+501,1,2026-05-15,"Scheduled Service",320,2026-11-15
+502,2,2026-06-20,"Oil and Filter Change",410,2026-12-20
+503,3,2026-07-01,"Tyre Replacement",850,2027-01-01
+504,4,2026-08-24,"Brake Repair",1250,2026-10-24
+505,5,2026-06-10,"Scheduled Service",390,2026-12-10
