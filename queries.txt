@@ -1,0 +1,32 @@
+//USECASE 1
+
+MATCH (c:Customer)-[:PLACES]->(o:DeliveryOrder)-[:GENERATES]->(s:Shipment)
+WHERE o.priority = 'High'
+RETURN o.orderID AS orderID,
+       c.customerID AS customerID,
+       c.customerType AS customerType,
+       s.shipmentID AS shipmentID,
+       o.requiredDeliveryDate AS requiredDeliveryDate
+ORDER BY o.requiredDeliveryDate;
+
+
+//USECASE 2
+
+MATCH (c:Customer)-[:PLACES]->(o:DeliveryOrder)
+      -[:GENERATES]->(s:Shipment {shipmentID: 201})
+MATCH (s)-[:FOLLOWS]->(r:Route)
+MATCH (s)-[:HAS_ASSIGNMENT]->(a:DeliveryAssignment)
+MATCH (d:Driver)-[:PERFORMS]->(a)
+MATCH (a)-[:USES]->(v:Vehicle)
+RETURN
+    s.shipmentID AS shipmentID,
+    o.orderID AS orderID,
+    coalesce(
+        c.businessName,
+        c.firstName + ' ' + c.lastName
+    ) AS customerName,
+    d.firstName + ' ' + d.lastName AS driverName,
+    v.registrationNumber AS vehicleRegistration,
+    r.routeName AS routeName,
+    a.completedDateTime AS completedDateTime
+ORDER BY a.assignmentID;
